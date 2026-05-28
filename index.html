@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Truck da Multiplicação</title>
+<style>
+:root{--azul:#14213d;--laranja:#ff8a1f;--amarelo:#ffcc3d;--verde:#2ecc71;--vermelho:#ef476f}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;background:radial-gradient(circle at top,#ffe8a3,#ffb36b);color:#24304a;overflow-x:hidden}
+.math-bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.math-bg span{position:absolute;color:rgba(20,33,61,.12);font-size:clamp(2rem,6vw,5rem);font-weight:1000;animation:floatMath 11s linear infinite}
+@keyframes floatMath{from{transform:translateY(110vh) rotate(0);opacity:0}20%{opacity:1}to{transform:translateY(-20vh) rotate(360deg);opacity:0}}
+.app{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.tela{display:none;width:min(1050px,100%);background:#fffdf7;border-radius:28px;padding:24px;box-shadow:0 22px 55px rgba(20,33,61,.25)}
+.tela.ativa{display:block}
+.abertura{text-align:center;color:white;background:linear-gradient(135deg,#14213d,#1d3557 55%,#ff8a1f)}
+.logo{font-size:clamp(2.2rem,7vw,5rem);font-weight:1000;text-shadow:0 7px 0 #0005;animation:pulse 1s infinite alternate}
+@keyframes pulse{to{transform:scale(1.04)}}
+.foodtruck{font-size:4rem;animation:drive 2.8s ease-in-out infinite}
+@keyframes drive{0%,100%{transform:translateX(-18px)}50%{transform:translateX(18px)}}
+.arcade{background:#0b1028;border:6px solid var(--amarelo);border-radius:24px;padding:20px;margin:18px auto;max-width:760px;color:#fff}
+h1,h2,h3{color:var(--azul);margin:10px 0}.abertura h1,.abertura h2{color:white}
+p{font-size:1.1rem;line-height:1.5}
+.badge{display:inline-block;background:var(--azul);color:white;padding:10px 16px;border-radius:999px;font-weight:900}
+button{border:0;border-radius:18px;padding:14px 18px;font-size:1rem;font-weight:900;cursor:pointer;transition:.2s}
+button:hover{transform:translateY(-2px) scale(1.02)}
+.primario{background:linear-gradient(135deg,var(--laranja),var(--amarelo));color:#2a1800}
+.secundario{background:#e9f1ff;color:var(--azul)}
+.perigo{background:#ffe5ec;color:#a31032}
+.botoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.centro{justify-content:center}
+.topo{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.status{display:flex;gap:10px;flex-wrap:wrap}.pill{background:#f5f7fb;padding:10px 14px;border-radius:999px;font-weight:900}
+.barra{height:18px;background:#e8edf7;border-radius:999px;overflow:hidden;margin:16px 0}
+.progresso{height:100%;width:0;background:linear-gradient(90deg,var(--verde),var(--amarelo));transition:.35s}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:white;border-radius:24px;padding:20px;box-shadow:inset 6px 6px 14px #0001}
+.chef-box{display:flex;gap:16px;align-items:center;margin-bottom:14px}
+.chef-kid{font-size:5rem;animation:chefBounce 1.2s ease-in-out infinite alternate;filter:drop-shadow(0 8px 8px rgba(0,0,0,.18))}
+@keyframes chefBounce{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-8px) rotate(2deg)}}
+.balao{background:white;border:4px solid var(--azul);border-radius:24px;padding:16px;font-weight:900;font-size:1.12rem;line-height:1.35;position:relative;box-shadow:0 8px 18px #0001;flex:1}
+.balao:before{content:"";position:absolute;left:-18px;bottom:22px;border-width:12px 18px 12px 0;border-style:solid;border-color:transparent var(--azul) transparent transparent}
+.balao:after{content:"";position:absolute;left:-11px;bottom:25px;border-width:9px 14px 9px 0;border-style:solid;border-color:transparent white transparent transparent}
+.enunciado{background:#fff8df;border-left:10px solid var(--laranja);border-radius:20px;padding:20px;text-align:center}
+.grande{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:1000;color:var(--azul)}
+.pergunta{background:#e9f1ff;border-radius:22px;padding:18px;text-align:center;font-size:1.45rem;font-weight:1000;color:var(--azul);margin-top:14px}
+.visual{background:#fff8df;border:3px dashed #ffd166;border-radius:22px;padding:18px;text-align:center;margin-top:16px}
+.objetos{font-size:2rem;line-height:1.6;word-break:break-word}
+.decomp{font-size:2rem;font-weight:1000;color:var(--azul);background:#fff8df;border-radius:18px;padding:14px;text-align:center}
+.conta-box{background:#f8fafc;border:2px solid #e5ecf5;border-radius:22px;padding:16px;margin-top:14px}
+.linha{display:flex;align-items:center;justify-content:space-between;gap:10px;background:white;border-radius:14px;padding:12px;margin:9px 0;font-weight:900}
+input{width:110px;padding:11px;border-radius:12px;border:3px solid #dbe3ef;font-size:1.1rem;font-weight:900;text-align:center}
+input.erro{border-color:var(--vermelho);background:#fff0f3}
+.feedback{min-height:58px;margin-top:14px;font-weight:900;font-size:1.08rem}.ok{color:#118c4f}.falha{color:#b31336}
+.dica{background:#e9f1ff;border-left:8px solid var(--azul);border-radius:16px;padding:12px;margin-top:12px;font-weight:800}
+.mapa{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:24px 0}
+.casa{width:64px;height:64px;border-radius:18px;background:#fff3c4;border:3px solid #ffd166;display:flex;align-items:center;justify-content:center;font-size:1.8rem;position:relative;font-weight:900}
+.casa.ativa{background:var(--verde);color:white;transform:scale(1.12)}
+.personagem{position:absolute;top:-36px;font-size:2rem;animation:pular .6s infinite alternate}
+@keyframes pular{to{transform:translateY(-8px)}}
+.sinal-sumindo{font-size:4rem;color:#ffcc3d;font-weight:1000;animation:sumir .9s ease forwards;text-align:center}
+@keyframes sumir{to{transform:scale(0) rotate(180deg);opacity:0}}
+.galaga-wrap{background:linear-gradient(135deg,#050716,#101f4c);border-radius:28px;padding:18px;border:6px solid #ffcc3d;box-shadow:inset 0 0 45px #0008}
+.galaga-hud{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:white;margin-bottom:12px}
+.galaga-hud .pill{background:rgba(255,255,255,.14);color:white}
+#galagaCanvas{width:100%;height:auto;display:block;border-radius:20px;background:#020617;box-shadow:inset 0 0 30px #000;touch-action:none}
+.galaga-help{color:white;background:rgba(255,255,255,.12);border-left:8px solid #2ecc71;margin-top:12px}
+.final{font-size:2rem;font-weight:1000;color:var(--azul)}
+.relatorio{width:100%;border-collapse:collapse;margin-top:18px;border-radius:16px;overflow:hidden}
+.relatorio th,.relatorio td{padding:10px;border-bottom:1px solid #e5ecf5;text-align:center}
+.relatorio th{background:#14213d;color:white}
+.confete{position:fixed;top:-20px;width:10px;height:16px;animation:cair 1.4s linear forwards}
+@keyframes cair{to{transform:translateY(110vh) rotate(360deg);opacity:0}}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.linha{flex-direction:column;align-items:flex-start}input{width:100%}.chef-box{align-items:center}.chef-kid{font-size:4rem}.balao{font-size:1rem}}
+</style>
+</head>
+<body>
+<div class="math-bg" id="mathBg"></div>
+<div class="app">
+
+<section id="inicio" class="tela ativa abertura">
+  <div class="logo">🍔 FOOD TRUCK</div>
+  <div class="foodtruck">🚚💨</div>
+  <div class="arcade">
+    <h2>Multiplicação é juntar grupos iguais</h2>
+    <p>O Chef vai explicar cada pedido. Leia, ouça e descubra o total.</p>
+    <p><strong>Exemplo:</strong> 12 hambúrgueres com 2 carnes cada → 12 × 2</p>
+  </div>
+  <div class="botoes centro">
+    <button class="primario" onclick="iniciar()">Começar</button>
+    <button class="secundario" onclick="falarInicio()">Ouvir instruções</button>
+    <button class="perigo" onclick="alternarSom()" id="somBtn">Som: ligado</button>
+  </div>
+</section>
+
+<section id="mapaTela" class="tela">
+  <h1>🗺️ Mapa das Fases</h1>
+  <p>O Chef avançou para a próxima fase.</p>
+  <div class="mapa" id="mapa"></div>
+  <div class="sinal-sumindo">×</div>
+</section>
+
+<section id="galaga" class="tela">
+  <div class="galaga-wrap">
+    <div class="galaga-hud">
+      <span class="badge">🚀 Bônus Galaga</span>
+      <div class="status">
+        <div class="pill">Inimigos: <span id="galagaKills">0</span>/10</div>
+        <div class="pill">🪙 <span id="galagaCoins">0</span></div>
+      </div>
+    </div>
+    <canvas id="galagaCanvas" width="960" height="540"></canvas>
+    <p class="galaga-help dica" id="galagaMsg">Use setas, mouse ou toque para mover. Aperte espaço ou toque para atirar.</p>
+  </div>
+</section>
+
+<section id="jogo" class="tela">
+  <div class="topo">
+    <div>
+      <span class="badge" id="faseBadge"></span>
+      <h2>Multiplicação por grupos iguais</h2>
+    </div>
+    <div class="status">
+      <div class="pill">✅ <span id="acertos">0</span></div>
+      <div class="pill">❌ <span id="erros">0</span></div>
+      <div class="pill">🪙 <span id="moedas">0</span></div>
+    </div>
+  </div>
+
+  <div class="barra"><div class="progresso" id="progresso"></div></div>
+
+  <div class="chef-box">
+    <div class="chef-kid">👨‍🍳</div>
+    <div class="balao" id="falaChef"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="enunciado">
+        <div class="grande" id="situacao"></div>
+        <div id="regra" style="font-size:1.35rem;font-weight:900;margin-top:10px"></div>
+      </div>
+
+      <div class="pergunta" id="pergunta"></div>
+
+      <div class="visual">
+        <strong>Veja os grupos:</strong>
+        <div class="objetos" id="visual"></div>
+      </div>
+
+      <div class="dica" id="dicaBox">Multiplicar é juntar grupos iguais.</div>
+
+      <div class="botoes">
+        <button class="secundario" onclick="mostrarDica()">Ver dica</button>
+        <button class="secundario" onclick="falarFase()">Ouvir o Chef</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🧮 Resolva</h3>
+      <div class="decomp" id="decomp"></div>
+      <div class="conta-box">
+        <div class="linha"><span id="linha1"></span><input id="p1" type="number"></div>
+        <div class="linha"><span id="linha2"></span><input id="p2" type="number"></div>
+        <div class="linha"><span id="linhaTotal"></span><input id="total" type="number"></div>
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <div class="botoes">
+        <button class="primario" onclick="corrigir()">Responder</button>
+        <button class="secundario" onclick="limpar()">Limpar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="final" class="tela">
+  <span class="badge">Relatório Final</span>
+  <h1>🏆 Parabéns!</h1>
+  <p class="final" id="placar"></p>
+  <p id="mensagemFinal"></p>
+  <table class="relatorio">
+    <thead><tr><th>Fase</th><th>Conta</th><th>Resposta</th><th>Tentativas</th></tr></thead>
+    <tbody id="corpoRelatorio"></tbody>
+  </table>
+  <div class="botoes">
+    <button class="primario" onclick="iniciar()">Jogar novamente</button>
+    <button class="secundario" onclick="falarFinal()">Ouvir resultado</button>
+  </div>
+</section>
+
+</div>
+
+<script>
+const fases=[
+ {n:12,q:2,item:"carnes",emoji:"🥩"},
+ {n:15,q:3,item:"queijos",emoji:"🧀"},
+ {n:24,q:2,item:"carnes",emoji:"🥩"},
+ {n:25,q:3,item:"queijos",emoji:"🧀"},
+ {n:32,q:2,item:"carnes",emoji:"🥩"},
+ {n:36,q:4,item:"queijos",emoji:"🧀"},
+ {n:48,q:2,item:"carnes",emoji:"🥩"},
+ {n:54,q:3,item:"queijos",emoji:"🧀"},
+ {n:67,q:2,item:"carnes",emoji:"🥩"},
+ {n:89,q:3,item:"queijos",emoji:"🧀"}
+];
+
+let fase=0,acertos=0,erros=0,moedas=0,tentativas=0,dicaNivel=0,historico=[];
+let mudo=false,ctx=null;
+let keys={},galagaRAF=null,galagaRunning=false,galagaLastShot=0;
+let galaga={shipX:480,shipTarget:480,shots:[],enemies:[],stars:[],explosions:[],kills:0};
+const $=id=>document.getElementById(id);
+
+function fundo(){
+ const sinais=["×","+","=","10","20","30","40"];
+ for(let i=0;i<32;i++){
+  const s=document.createElement("span");
+  s.textContent=sinais[Math.floor(Math.random()*sinais.length)];
+  s.style.left=Math.random()*100+"vw";
+  s.style.animationDelay=Math.random()*10+"s";
+  s.style.animationDuration=8+Math.random()*8+"s";
+  $("mathBg").appendChild(s);
+ }
+}
+fundo();
+
+function tela(id){document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));$(id).classList.add("ativa")}
+function decompor(n){return{d:Math.floor(n/10)*10,u:n%10}}
+function perguntaItem(f){return f.item==="carnes"?"Quantas carnes são necessárias ao todo?":"Quantos queijos são necessários ao todo?"}
+function textoEnunciado(f){return `Temos ${f.n} hambúrgueres. Cada hambúrguer usa ${f.q} ${f.item}. ${perguntaItem(f)}`}
+
+function iniciar(){
+ pararGalaga();fase=0;acertos=0;erros=0;moedas=0;historico=[];
+ transicaoMapa();
+}
+
+function transicaoMapa(){
+ pararGalaga();
+ tela("mapaTela");
+ $("mapa").innerHTML="";
+ for(let i=0;i<fases.length;i++){
+  const casa=document.createElement("div");
+  casa.className="casa"+(i===fase?" ativa":"");
+  casa.innerHTML=i===fase?`<span class="personagem">👨‍🍳</span>${i+1}`:`${i+1}`;
+  $("mapa").appendChild(casa);
+ }
+ somPasso();
+ setTimeout(carregar,1200);
+}
+
+function carregar(){
+ tela("jogo");
+ const f=fases[fase],d=decompor(f.n);
+ tentativas=0;dicaNivel=0;
+
+ $("faseBadge").textContent=`Fase ${fase+1} de ${fases.length}`;
+ $("situacao").textContent=`${f.n} hambúrgueres`;
+ $("regra").textContent=`Cada hambúrguer usa ${f.q} ${f.item} ${f.emoji}`;
+ $("pergunta").textContent=perguntaItem(f);
+ $("falaChef").textContent=textoEnunciado(f);
+
+ const qtdVisual=Math.min(f.n,12);
+ $("visual").innerHTML="🍔 ".repeat(qtdVisual)+(f.n>12?`... (${f.n} ao todo)`:"")+
+ `<br><span style="font-size:1.25rem">Cada 🍔 tem ${f.emoji.repeat(f.q)}</span>`;
+
+ $("decomp").textContent=`${f.n} = ${d.d} + ${d.u}`;
+ $("linha1").textContent=`${d.d} × ${f.q} =`;
+ $("linha2").textContent=`${d.u} × ${f.q} =`;
+ $("linhaTotal").textContent=`Total de ${f.item}:`;
+ $("dicaBox").textContent="Multiplicar é juntar grupos iguais.";
+ $("progresso").style.width=`${(fase/fases.length)*100}%`;
+
+ atualizarStatus();
+ limpar();
+ setTimeout(falarFase,350);
+}
+
+function atualizarStatus(){
+ $("acertos").textContent=acertos;
+ $("erros").textContent=erros;
+ $("moedas").textContent=moedas;
+}
+
+function mostrarDica(){
+ const f=fases[fase],d=decompor(f.n);
+ dicaNivel++;
+ if(dicaNivel===1){
+  $("dicaBox").textContent=`São ${f.n} grupos de ${f.q}.`;
+  $("falaChef").textContent=`Pense assim: são ${f.n} grupos iguais. Em cada grupo há ${f.q} ${f.item}.`;
+ }else if(dicaNivel===2){
+  $("dicaBox").textContent=`Separe: ${f.n} = ${d.d} + ${d.u}.`;
+  $("falaChef").textContent=`Agora separe o número: ${f.n} é igual a ${d.d} mais ${d.u}.`;
+ }else{
+  $("dicaBox").textContent=`Calcule ${d.d} × ${f.q}, depois ${d.u} × ${f.q}, e some.`;
+  $("falaChef").textContent=`Calcule as duas partes e depois some para achar o total de ${f.item}.`;
+ }
+ clique();
+}
+
+function corrigir(){
+ clique();
+ tentativas++;
+ const f=fases[fase],d=decompor(f.n);
+ const p1=d.d*f.q,p2=d.u*f.q,total=p1+p2;
+ let ok=true;
+ document.querySelectorAll("input").forEach(i=>i.classList.remove("erro"));
+ if(Number($("p1").value)!==p1){$("p1").classList.add("erro");ok=false}
+ if(Number($("p2").value)!==p2){$("p2").classList.add("erro");ok=false}
+ if(Number($("total").value)!==total){$("total").classList.add("erro");ok=false}
+
+ if(ok){
+  acertos++;moedas+=10;
+  historico.push({fase:fase+1,conta:`${f.n} × ${f.q}`,res:total,tentativas});
+  atualizarStatus();
+  $("feedback").className="feedback ok";
+  $("feedback").textContent=`Muito bem! ${f.n} grupos de ${f.q} = ${total}.`;
+  $("falaChef").textContent=`Excelente! ${f.n} grupos de ${f.q} formam ${total} ${f.item}.`;
+  somAcerto();confetes();
+
+  setTimeout(()=>{
+   fase++;
+   if(fase>=fases.length) finalizar();
+   else iniciarGalaga();
+  },1200);
+ }else{
+  erros++;atualizarStatus();
+  $("feedback").className="feedback falha";
+  $("feedback").textContent="Revise os campos vermelhos. Faça uma parte por vez.";
+  $("falaChef").textContent="Quase! Lembre: primeiro faça as dezenas, depois as unidades, e por fim some.";
+  somErro();
+ }
+}
+
+function limpar(){
+ $("p1").value="";$("p2").value="";$("total").value="";
+ document.querySelectorAll("input").forEach(i=>i.classList.remove("erro"));
+ $("feedback").textContent="";$("feedback").className="feedback";
+}
+
+function finalizar(){
+ pararGalaga();tela("final");
+ $("placar").textContent=`${acertos} fases concluídas • ${erros} erros`;
+ $("mensagemFinal").textContent=`Você ganhou ${moedas} moedas praticando multiplicação como grupos iguais.`;
+ $("corpoRelatorio").innerHTML=historico.map(h=>`<tr><td>${h.fase}</td><td>${h.conta}</td><td>${h.res}</td><td>${h.tentativas}</td></tr>`).join("");
+ somAcerto();confetes();
+}
+
+/* GALAGA */
+function iniciarGalaga(){
+ tela("galaga");
+ const canvas=$("galagaCanvas");
+ galaga={shipX:480,shipTarget:480,shots:[],enemies:[],stars:[],explosions:[],kills:0};
+ for(let i=0;i<70;i++)galaga.stars.push({x:Math.random()*960,y:Math.random()*540,s:Math.random()*2+.5,v:Math.random()*1.2+.4});
+ for(let i=0;i<10;i++)galaga.enemies.push({x:120+(i%5)*180,y:70+Math.floor(i/5)*75,baseX:120+(i%5)*180,phase:Math.random()*6.28,alive:true});
+ $("galagaKills").textContent=0;$("galagaCoins").textContent=moedas;
+ $("galagaMsg").textContent="Destrua 10 inimigos. Espaço ou toque para atirar.";
+ galagaRunning=true;
+ canvas.onmousemove=e=>{const r=canvas.getBoundingClientRect();galaga.shipTarget=(e.clientX-r.left)*(canvas.width/r.width)};
+ canvas.ontouchmove=e=>{e.preventDefault();const r=canvas.getBoundingClientRect();galaga.shipTarget=(e.touches[0].clientX-r.left)*(canvas.width/r.width)};
+ canvas.onclick=()=>atirarGalaga();
+ tocarMusicaGalaga();loopGalaga();
+}
+document.addEventListener("keydown",e=>{keys[e.key]=true;if($("galaga").classList.contains("ativa")&&e.key===" ")atirarGalaga()});
+document.addEventListener("keyup",e=>keys[e.key]=false);
+function atirarGalaga(){
+ if(!galagaRunning)return;
+ const now=performance.now();
+ if(now-galagaLastShot<220)return;
+ galagaLastShot=now;
+ galaga.shots.push({x:galaga.shipX,y:455,v:9});
+ somTiro();
+}
+function loopGalaga(){
+ if(!galagaRunning)return;
+ const canvas=$("galagaCanvas"),c=canvas.getContext("2d"),W=960,H=540;
+ if(keys.ArrowLeft)galaga.shipTarget-=12;if(keys.ArrowRight)galaga.shipTarget+=12;
+ galaga.shipTarget=Math.max(45,Math.min(W-45,galaga.shipTarget));
+ galaga.shipX+=(galaga.shipTarget-galaga.shipX)*0.18;
+ c.clearRect(0,0,W,H);desenharEspaco(c,W,H);desenharNave(c,galaga.shipX,470);
+ galaga.shots.forEach(s=>s.y-=s.v);
+ galaga.shots=galaga.shots.filter(s=>s.y>-20);
+ galaga.shots.forEach(s=>desenharTiro(c,s));
+ galaga.enemies.forEach((e,idx)=>{
+  if(!e.alive)return;
+  e.x=e.baseX+Math.sin(performance.now()/500+e.phase)*35;
+  desenharInimigo(c,e.x,e.y,idx);
+  galaga.shots.forEach(s=>{
+   if(Math.abs(s.x-e.x)<34&&Math.abs(s.y-e.y)<28){
+    e.alive=false;s.y=-100;galaga.kills++;moedas++;
+    $("galagaKills").textContent=galaga.kills;$("galagaCoins").textContent=moedas;
+    galaga.explosions.push({x:e.x,y:e.y,r:4,a:1});somExplosao();
+   }
+  });
+ });
+ galaga.explosions.forEach(ex=>{ex.r+=4;ex.a-=.045;desenharExplosao(c,ex)});
+ galaga.explosions=galaga.explosions.filter(ex=>ex.a>0);
+ if(galaga.kills>=10){
+  $("galagaMsg").textContent="Missão completa! Indo para o mapa...";
+  pararGalaga();somAcerto();setTimeout(transicaoMapa,1200);return;
+ }
+ galagaRAF=requestAnimationFrame(loopGalaga);
+}
+function desenharEspaco(c,W,H){
+ const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#030712");g.addColorStop(.55,"#081a3a");g.addColorStop(1,"#020617");
+ c.fillStyle=g;c.fillRect(0,0,W,H);
+ galaga.stars.forEach(st=>{st.y+=st.v;if(st.y>H){st.y=0;st.x=Math.random()*W}c.fillStyle=`rgba(255,255,255,${.35+st.s/3})`;c.beginPath();c.arc(st.x,st.y,st.s,0,Math.PI*2);c.fill()});
+}
+function desenharNave(c,x,y){
+ c.save();c.shadowColor="#2ecc71";c.shadowBlur=18;c.fillStyle="#2ecc71";
+ c.beginPath();c.moveTo(x,y-42);c.lineTo(x-36,y+34);c.lineTo(x,y+18);c.lineTo(x+36,y+34);c.closePath();c.fill();
+ c.fillStyle="#dffcff";c.beginPath();c.arc(x,y-8,13,0,Math.PI*2);c.fill();
+ c.fillStyle="#ffcc3d";c.fillRect(x-24,y+30,12,20);c.fillRect(x+12,y+30,12,20);c.restore();
+}
+function desenharTiro(c,s){c.save();c.shadowColor="#ffcc3d";c.shadowBlur=16;c.fillStyle="#ffcc3d";c.fillRect(s.x-4,s.y-22,8,28);c.restore()}
+function desenharInimigo(c,x,y,i){
+ c.save();c.shadowColor="#ef476f";c.shadowBlur=16;
+ const colors=["#ef476f","#ff8a1f","#8b5cf6","#06b6d4","#facc15"];c.fillStyle=colors[i%colors.length];
+ c.beginPath();c.moveTo(x,y-24);c.lineTo(x-34,y);c.lineTo(x-20,y+25);c.lineTo(x,y+12);c.lineTo(x+20,y+25);c.lineTo(x+34,y);c.closePath();c.fill();
+ c.fillStyle="#fff";c.beginPath();c.arc(x-10,y,5,0,Math.PI*2);c.arc(x+10,y,5,0,Math.PI*2);c.fill();c.restore();
+}
+function desenharExplosao(c,ex){c.save();c.globalAlpha=ex.a;c.shadowColor="#ffcc3d";c.shadowBlur=24;c.fillStyle="#ffcc3d";c.beginPath();c.arc(ex.x,ex.y,ex.r,0,Math.PI*2);c.fill();c.restore()}
+function pararGalaga(){galagaRunning=false;cancelAnimationFrame(galagaRAF);galagaRAF=null}
+
+/* ÁUDIO */
+function audio(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();return ctx}
+function tom(f,d,t="sine",v=.12){
+ if(mudo)return;
+ const c=audio(),o=c.createOscillator(),g=c.createGain();
+ o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(c.destination);
+ o.start();g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.stop(c.currentTime+d);
+}
+function clique(){tom(520,.06,"triangle",.08)}
+function somAcerto(){[523,659,784,1046].forEach((n,i)=>setTimeout(()=>tom(n,.15,"square",.09),i*90))}
+function somErro(){tom(220,.18,"sawtooth",.1);setTimeout(()=>tom(150,.18,"sawtooth",.09),130)}
+function somPasso(){[330,392,494].forEach((n,i)=>setTimeout(()=>tom(n,.12,"square",.08),i*120))}
+function somTiro(){tom(780,.06,"square",.07);setTimeout(()=>tom(1046,.04,"triangle",.05),40)}
+function somExplosao(){tom(140,.09,"sawtooth",.11);setTimeout(()=>tom(70,.12,"square",.06),60)}
+function tocarMusicaGalaga(){if(mudo)return;[196,247,294,392,294,247,196,330].forEach((n,i)=>setTimeout(()=>tom(n,.09,"square",.04),i*90))}
+function alternarSom(){
+ mudo=!mudo;
+ $("somBtn").textContent=mudo?"Som: desligado":"Som: ligado";
+ if(mudo)speechSynthesis.cancel();
+}
+function falar(txt){
+ if(mudo)return;
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(txt);
+ u.lang="pt-BR";u.rate=.9;speechSynthesis.speak(u);
+}
+function falarInicio(){falar("Nesta atividade, multiplicar significa juntar grupos iguais. O Chef vai ler o pedido para você.")}
+function falarFase(){falar(textoEnunciado(fases[fase]));}
+function falarFinal(){falar($("placar").textContent+". "+$("mensagemFinal").textContent)}
+function confetes(){
+ const cores=["#ffcc3d","#ff8a1f","#2ecc71","#14213d","#ef476f"];
+ for(let i=0;i<35;i++){
+  const c=document.createElement("div");c.className="confete";c.style.left=Math.random()*100+"vw";
+  c.style.background=cores[Math.floor(Math.random()*cores.length)];
+  document.body.appendChild(c);setTimeout(()=>c.remove(),1600);
+ }
+}
+</script>
+</body>
+</html>
